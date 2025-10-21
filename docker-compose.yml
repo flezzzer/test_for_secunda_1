@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: org_catalog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  fastapi:
+    build: .
+    container_name: fastapi_app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/org_catalog
+      MAX_ACTIVITY_DEPTH: 3
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+    command: >
+      bash -c "sleep 5 &&
+               alembic upgrade head &&
+               poetry run python -m app.test_data &&
+               poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+volumes:
+  pgdata:
