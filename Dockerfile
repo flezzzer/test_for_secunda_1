@@ -11,5 +11,5 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app
 
-CMD ["poetry", "run", "python", "app/test_data.py"]
+CMD alembic upgrade head && python -m app.test_data && uvicorn app.main:app --host 0.0.0.0 --port 8000
 

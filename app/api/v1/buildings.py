@@ -14,12 +14,17 @@ def create_building_api(b: BuildingCreate, db: Session = Depends(get_db)):
 
     Можно добавить адрес здания и его координаты (широта/долгота), чтобы привязывать организации к карте.
 
-    Args:
-        b (BuildingCreate): Данные здания (адрес, широта, долгота).
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
 
-    Returns:
-        Building: Созданное здание с его ID.
+    **Body**:
+    - **address (str)**: Адрес здания (например, г. Москва, ул. Ленина 1)
+    - **longitude (float)**: долгота здания
+    - **latitude (float)**: широта здания
+
+
+    **Returns**:
+    - **Building**: Созданная организация.
     """
     return buildings.create_building(db, b.address, b.latitude, b.longitude)
 
@@ -31,11 +36,11 @@ def list_buildings_api(db: Session = Depends(get_db)):
 
     Используется для выбора здания при создании организации или для отображения на карте.
 
-    Args:
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
 
-    Returns:
-        List[Building]: Список всех зданий.
+   **Returns**:
+    - **List[Building]**: Список всех зданий.
     """
     return buildings.get_buildings(db)
 

@@ -13,12 +13,18 @@ def create_org(o: OrganizationCreate, db: Session = Depends(get_db)):
     """
     Создаёт новую организацию.
 
-    Args:
-        o (OrganizationCreate): Данные организации (название, здание, телефоны, виды деятельности).
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
 
-    Returns:
-        Organization: Созданная организация с ID и всеми связями.
+    **Body**:
+    - **name (str)**: Название организации
+    - **building_id (int)**: ID здания, к которому привязана организация
+    - **phone_numbers (List[str])**: Список номеров телефонов организации
+    - **activity_ids (List[int])**: Список ID активностей организации
+
+
+    **Returns**:
+    - **Orrganization**: Созданное здание с его ID.
     """
     return organizations.create_organization(db, o.name, o.building_id, o.phone_numbers, o.activity_ids)
 
@@ -28,12 +34,12 @@ def by_building(building_id: int, db: Session = Depends(get_db)):
     """
     Возвращает список организаций, расположенных в конкретном здании.
 
-    Args:
-        building_id (int): ID здания.
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **building_id (int)**: ID здания
 
-    Returns:
-        List[Organization]: Организации, находящиеся в этом здании.
+    **Returns**:
+     - **List[Organization]**: Список организаций.
     """
     return organizations.get_orgs_by_building(db, building_id)
 
@@ -46,13 +52,13 @@ def by_activity(activity_id: int, include_descendants: bool = True, db: Session 
     Можно включить подвиды активности (include_descendants=True), чтобы получить все организации,
     которые занимаются этой деятельностью или её подкатегориями.
 
-    Args:
-        activity_id (int): ID активности.
-        include_descendants (bool, optional): Включать подвиды активности. По умолчанию True.
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **activity_id (int)**: ID активности
+    - **include_descendants (bool, optional)**: Включать ли возможность поиска подкатегорий активности
 
-    Returns:
-        List[Organization]: Организации с указанной активностью и её подкатегориями.
+    **Returns**:
+     - **List[Organization]**: Список организаций.
     """
     return organizations.get_orgs_by_activity(db, activity_id, include_descendants, settings.MAX_ACTIVITY_DEPTH)
 
@@ -64,12 +70,12 @@ def search(name: Optional[str] = None, db: Session = Depends(get_db)):
 
     Если name не указан, возвращается пустой список.
 
-    Args:
-        name (str, optional): Часть названия организации.
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **name (str)**: Название организации
 
-    Returns:
-        List[Organization]: Организации, которые содержат name в названии.
+    **Returns**:
+     - **List[Organization]**: Список организаций.
     """
     return organizations.search_by_name(db, name) if name else []
 
@@ -81,14 +87,14 @@ def within_radius(lat: float, lon: float, radius_km: float, db: Session = Depend
 
     Используется для отображения организаций на карте.
 
-    Args:
-        lat (float): Широта центра.
-        lon (float): Долгота центра.
-        radius_km (float): Радиус в километрах.
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **lat (float)**: Широта центра
+    - **lon (float)**: Долгота центра
+    - **radius_km (float)**: Радиус в км. от центра
 
-    Returns:
-        List[Organization]: Организации, находящиеся в заданном радиусе.
+    **Returns**:
+     - **List[Organization]**: Список организаций.
     """
     return organizations.orgs_within_radius(db, lat, lon, radius_km)
 
@@ -98,15 +104,15 @@ def within_bbox(lat_min: float, lon_min: float, lat_max: float, lon_max: float, 
     """
     Находит организации внутри прямоугольной области (bounding box).
 
-    Args:
-        lat_min (float): Минимальная широта.
-        lon_min (float): Минимальная долгота.
-        lat_max (float): Максимальная широта.
-        lon_max (float): Максимальная долгота.
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **lat_min (float)**: Минимальная широта.
+    - **lon_min (float)**: Минимальная долгота.
+    - **lat_max (float)**: Максимальная широта.
+    - **lon_max (float)** Максимальная долгота.
 
-    Returns:
-        List[Organization]: Организации, находящиеся внутри bounding box.
+    **Returns**:
+     - **List[Organization]**: Список организаций.
     """
     return organizations.orgs_within_bbox(db, lat_min, lon_min, lat_max, lon_max)
 
@@ -117,15 +123,15 @@ def get_org(org_id: int, db: Session = Depends(get_db)):
     """
     Получает организацию по её ID.
 
-    Args:
-        org_id (int): ID организации.
-        db (Session, optional): Сессия базы данных.
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **org_id (int)**: ID организации
 
-    Returns:
-        Organization: Организация с указанным ID.
+    **Returns**:
+     - **Organization**: Найденная организация.
 
-    Raises:
-        HTTPException: Если организация не найдена.
+    **Raises**:
+    - **HTTPException**: Если организация не найдена.
     """
     org = organizations.get_org_by_id(db, org_id)
     if not org:

@@ -17,14 +17,17 @@ def create_activity_api(a: ActivityCreate, db: Session = Depends(get_db)):
     Можно указать родительскую активность, чтобы построить дерево деятельности.
     Максимальная глубина вложенности ограничена настройкой `MAX_ACTIVITY_DEPTH`.
 
-    Args:
-        a (ActivityCreate): Данные активности, включая имя и необязательный ID родительской активности.
-        db (Session, optional): Сессия базы данных (автоматически через Depends).
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
 
-    Returns:
-        Activity: Созданная активность с её ID и родителем.
+   **Returns**:
+    - **Activity**: Созданная активность с её ID и родителем
 
-    Raises:
+     **Body**:
+    - **name (str)**: Название активности
+    - **parent_id (int)**: ID родителя (любое значение из имеющихся id, чтобы построить дерево, либо же null)
+
+    **Raises**:
         HTTPException: Если превышена максимальная глубина вложенности или переданы некорректные данные.
     """
     try:
@@ -41,12 +44,12 @@ def get_descendants(activity_id: int, db: Session = Depends(get_db)):
     Позволяет получить все подвиды деятельности, которые вложены в указанную активность.
     Используется, например, для поиска организаций по деятельности с учётом подвидов.
 
-    Args:
-        activity_id (int): ID родительской активности.
-        db (Session, optional): Сессия базы данных (автоматически через Depends).
+    **Params**:
+    - **x-api-key (str)**: API-ключ, передаваемый в заголовке запроса. Должен совпадать с ключом из `.env`.
+    - **activity_id (int)**: ID родительской активности.
 
-    Returns:
-        List[int]: Список ID всех потомков активности.
+   **Returns**:
+    - **List[int]**: Список ID всех потомков активности.
     """
     return list(get_activity_descendants(db, activity_id, settings.MAX_ACTIVITY_DEPTH))
 

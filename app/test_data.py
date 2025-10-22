@@ -6,8 +6,8 @@ from app.services.buildings import create_building
 from app.services.activities import create_activity
 from app.core.config import settings
 
-def init_db():
-    Base.metadata.create_all(bind=engine)
+# def init_db():
+#     Base.metadata.create_all(bind=engine)
 
 def seed_data(db: Session):
     buildings = {
@@ -69,7 +69,7 @@ def seed_data(db: Session):
             create_organization(db, o["name"], o["building"], o["phones"], o["activities"])
 
 if __name__ == "__main__":
-    init_db()
+    # init_db()
     db = SessionLocal()
     try:
         seed_data(db)
